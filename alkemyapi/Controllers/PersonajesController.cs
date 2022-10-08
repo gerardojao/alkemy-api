@@ -29,10 +29,10 @@ namespace alkemyapi.Controllers
 
         }
 
-        // GET: api/<PersonajesController>
-        [HttpGet("character")]
+        //GET: api/<PersonajesController>
+            [HttpGet("character")]
         // public async Task<ActionResult> GetCharacter(string token)
-        public async Task<ActionResult<IEnumerable<Personaje>>> GetAllAcceso(string token)
+        public async Task<ActionResult<IEnumerable<Personaje>>> GetAllPersonajes(string token)
         {
             Respuesta<object> respuesta = new();
             try
@@ -43,52 +43,40 @@ namespace alkemyapi.Controllers
                     var character = await _repository.SelectAll<Personaje>();
 
                     if (character != null)
-                    {
-                        var Personaje_pelis = (from personajes in _context.Personajes
-                                               join pelis in _context.PeliculaSeries on personajes.Id equals pelis.PersonajeId
-                                               select new
-                                               {
-                                                   personajes.Nombre,
-                                                   personajes.Imagen
-
-                                               }).ToList();
-
+                    {                                  
+                        foreach (var item in character)
+                        {
+                            respuesta.Data.Add(new
+                            {
+                                item.Nombre,
+                                item.Imagen
+                            });
+                        }
                         respuesta.Ok = 1;
                         respuesta.Message = "Personajes registrados";
-                        foreach (var item in Personaje_pelis)
-                        {
-                            respuesta.Data.Add(item);
-                        }
-                        return Ok(respuesta);
-                    }
-                    //respuesta.Data.Add(character);
-                    //respuesta.Ok = 1;
-                    //respuesta.Message = "Lista de personajes registrados";                
+                    }                                  
                     else
                     {
                         respuesta.Ok = 0;
                         respuesta.Message = "No hay Personajes registrados";
                         return BadRequest(respuesta);
                     }
-            }
+                }
                 else
-            {
-                respuesta.Ok = 0;
-                respuesta.Message = "Requiere token para continuar";
-                return BadRequest(respuesta);
-            }
-        
+                {
+                    respuesta.Ok = 0;
+                    respuesta.Message = "Requiere token para continuar";
+                    return BadRequest(respuesta);
+                }
             }
             catch (Exception e)
             {
-                respuesta.Ok = 0;                
+                respuesta.Ok = 0;
                 respuesta.Message = e.ToString() + " " + e.InnerException;
             }
-           
             return Ok(respuesta);
-
         }
 
-      
+       
     }
 }
