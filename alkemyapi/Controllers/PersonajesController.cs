@@ -102,12 +102,19 @@ namespace alkemyapi.Controllers
                                          personaje.Edad,
                                          personaje.Peso,
                                          personaje.Historia,
-                                         pelis.Titulo
+                                         Titulo = (from pel in _context.PeliculaSeries
+                                                   where pel.PersonajeId == personaje.Id
+                                                   select (pel.Titulo)).ToList()
 
                                      }).ToListAsync();
                 if (_person != null)
                 {
-                    respuesta.Data.Add(_person);
+                    foreach (var item in _person)
+                    {
+                        respuesta.Data.Add(item);
+                    }
+               
+                   
                     respuesta.Ok = 1;
                     respuesta.Message = "Detalle del personaje";
                 }
@@ -167,6 +174,7 @@ namespace alkemyapi.Controllers
             }
             return Ok(respuesta);
          }
+        
         //Actualizar Personaje
         [HttpPut("UpdateCharacter{Id}")]
 
@@ -198,8 +206,7 @@ namespace alkemyapi.Controllers
         }
 
         //Eliminar Personaje
-        [HttpDelete("DeleteCharacter{Id}")]
-       
+        [HttpDelete("DeleteCharacter{Id}")]       
         public async Task<ActionResult<Personaje>> DeletePersonaje(int Id)
         {
             Respuesta<object> respuesta = new();

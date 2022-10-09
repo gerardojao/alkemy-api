@@ -11,6 +11,10 @@ namespace alkemyapi.Models
 {
     public class Personaje
     {
+        public Personaje()
+        {
+            PeliculaSeries = new HashSet<PeliculaSerie>();
+        }
         [Column(TypeName = "varchar(100)")]
         public string Imagen { get; set; }
         //[NotMapped]
@@ -21,7 +25,7 @@ namespace alkemyapi.Models
 
         [Column(TypeName = "varchar(100)")]
         public string Nombre { get; set; }
-       
+
         public int? Edad { get; set; }
 
         public int? Peso { get; set; }
@@ -32,6 +36,6 @@ namespace alkemyapi.Models
         public int PeliculaSerieId { get; set; }
 
         [JsonIgnore]
-        public List<PeliculaSerie> PeliculaSeries { get; set; }
+        public ICollection<PeliculaSerie> PeliculaSeries { get; set; }
     }
 }
