@@ -1,10 +1,12 @@
 ﻿using alkemyapi.Data;
 using alkemyapi.Models;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -19,20 +21,19 @@ namespace alkemyapi.Controllers
         private readonly AppDbContext _context;
         private readonly IRepository _repository;
         private readonly IConfiguration _appsettings;
+        private readonly IWebHostEnvironment _env;
 
-
-        public PersonajesController(IConfiguration appsettings, AppDbContext context, IRepository repository)
+        public PersonajesController(IConfiguration appsettings, AppDbContext context, IRepository repository, IWebHostEnvironment env)
         {
             _context = context;
             _repository = repository;
             _appsettings = appsettings;
-
+            _env = env;
         }
 
         //GET: api/<PersonajesController>
-            [HttpGet("character")]
-        // public async Task<ActionResult> GetCharacter(string token)
-        public async Task<ActionResult<IEnumerable<Personaje>>> GetAllPersonajes(string token)
+       [HttpGet("character")]
+       public async Task<ActionResult<IEnumerable<Personaje>>> GetAllPersonajes(string token)
         {
             Respuesta<object> respuesta = new();
             try
@@ -77,6 +78,148 @@ namespace alkemyapi.Controllers
             return Ok(respuesta);
         }
 
+        //GET: api/<UsersController>
+        [HttpGet]
+        public async Task<ActionResult> GetAllChcaracters()
+        {  
+            var character = await _repository.SelectAll<Personaje>();
+            return Ok(character);
+        }
+        // GET api/<QuestionsVrsController>/5
+        [HttpGet("character/{id}")]
+        public async Task<ActionResult> GetPersonajeById(int id)
+        {
+            Respuesta<object> respuesta = new();
+            try
+            {
+                var _person = await (from personaje in _context.Personajes
+                                     join pelis in _context.PeliculaSeries on personaje.PeliculaSerieId equals pelis.Id
+                                     where personaje.Id == id
+                                     select new
+                                     {
+                                         personaje.Imagen,
+                                         personaje.Nombre,
+                                         personaje.Edad,
+                                         personaje.Peso,
+                                         personaje.Historia,
+                                         pelis.Titulo
+
+                                     }).ToListAsync();
+                if (_person != null)
+                {
+                    respuesta.Data.Add(_person);
+                    respuesta.Ok = 1;
+                    respuesta.Message = "Detalle del personaje";
+                }
+                else
+                {
+                    respuesta.Ok = 0;
+                    respuesta.Message = "Personaje no encontrado";
+                }
+              
+            }
+            catch (Exception e)
+            {
+                respuesta.Ok = 0;
+                respuesta.Message = e.Message + " " + e.InnerException;
+                return Ok(respuesta);
+            }
+            return Ok(respuesta);
+        }
+
+        //Ssaved images
+        [HttpPost("newcharacter")]
+        public async Task<ActionResult> CreateCharacter([FromForm] PersonajeFile person)        
+        {            
+           
+            Respuesta<object> respuesta = new();
+            try
+            {
+                if (person!=null)
+                {
+                    string guidImagen = null;
+                    if (person.File != null)
+                    {
+                        string ficherosImagenes = Path.Combine(_env.WebRootPath, "File");
+                        guidImagen = Guid.NewGuid().ToString() + person.File.FileName;
+                        string ruta = Path.Combine(ficherosImagenes, guidImagen);
+                        person.File.CopyTo(new FileStream(ruta, FileMode.Create));
+                    }
+                    Personaje personaje = new();
+                    personaje.Imagen = guidImagen;
+                    personaje.Nombre = person.Nombre;
+                    personaje.Peso = person.Peso;
+                    personaje.Edad = person.Edad;
+                    personaje.Historia = person.Historia;
+                    personaje.PeliculaSerieId = person.PeliculaSerieId;
+                    
+                    await _repository.CreateAsync(personaje);
+                    respuesta.Ok = 1;
+                    respuesta.Message = "Character registered successfully";                   
+                }
+
+            }
+            catch (Exception e)
+            {
+                respuesta.Ok = 0;
+                respuesta.Message = e.Message + " " + e.InnerException;
+                return Ok(respuesta);
+            }
+            return Ok(respuesta);
+         }
+        //Actualizar Personaje
+        [HttpPut("UpdateCharacter{Id}")]
+
+        public async Task<ActionResult<Personaje>> ActualizarPersonaje(int Id, [FromBody]Personaje personaje)
+        {
+            Respuesta<object> respuesta = new();
+            try
+            {
+                var _person = await _repository.SelectById<Personaje>(Id);
+                if (_person != null)
+                {
+                    _person.Imagen = personaje.Imagen;
+                    _person.Nombre = personaje.Nombre;
+                    _person.Peso = personaje.Peso;
+                    _person.Edad = personaje.Edad;
+                    _person.Historia = personaje.Historia;
+                    _person.PeliculaSerieId = personaje.PeliculaSerieId;
+                    await _repository.UpdateAsync(_person);
+                    respuesta.Ok = 1;
+                    respuesta.Message = "Personaje actualizado satisfactoriamente";
+                }
+            }
+            catch (Exception e)
+            {
+                respuesta.Ok = 0;
+                respuesta.Message = e.Message + " " + e.InnerException;
+            }
+            return Ok(respuesta);
+        }
+
+        //Eliminar Personaje
+        [HttpDelete("DeleteCharacter{Id}")]
        
+        public async Task<ActionResult<Personaje>> DeletePersonaje(int Id)
+        {
+            Respuesta<object> respuesta = new();
+            try
+            {
+                var person = await _repository.SelectById<Personaje>(Id);
+                if (person != null)
+                {                   
+                    await _repository.DeleteAsync(person);
+                    respuesta.Ok = 1;
+                    respuesta.Message = "Personaje eliminado satisfactoriamente";
+                }
+            }
+            catch (Exception e)
+            {
+                respuesta.Ok = 0;
+                respuesta.Message = e.Message + " " + e.InnerException;
+            }
+            return Ok(respuesta);
+        }
+
     }
 }

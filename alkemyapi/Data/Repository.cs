@@ -36,8 +36,8 @@ namespace alkemyapi.Data
 
         public async Task DeleteAsync<T>(T entity) where T : class
         {
-            this._dbContext.Set<T>().Update(entity);
-            _ = await this._dbContext.SaveChangesAsync();
+            _dbContext.Set<T>().Remove(entity);
+            _ = await _dbContext.SaveChangesAsync();
         }
 
         public async Task<T> SelectById<T>(int Id) where T : class
@@ -47,8 +47,8 @@ namespace alkemyapi.Data
 
         public async Task UpdateAsync<T>(T entity) where T : class
         {
-            this._dbContext.Set<T>().Update(entity);
-            _ = await this._dbContext.SaveChangesAsync();
+            _dbContext.Set<T>().Update(entity);
+            _ = await _dbContext.SaveChangesAsync();
         }
                
     }
