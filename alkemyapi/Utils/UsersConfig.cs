@@ -7,10 +7,9 @@ namespace alkemyapi.Utils
 {
     public class UsersConfig
     {
-        // Function to remove . from gmail
-        public static string CheckGmail(string email)
+        public static String CheckGmail(string email)
         {
-            string emailverify;
+            var emailverify = "";
             var auxemail = email.Split("@");
             if (auxemail[1] == "gmail.com")
             {
@@ -23,7 +22,7 @@ namespace alkemyapi.Utils
             }
             else
             {
-                emailverify = email;
+                return email;
             }
             return emailverify;
         }

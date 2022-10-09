@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using SendGrid;
+using SendGrid.Helpers.Mail;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
@@ -23,13 +25,15 @@ namespace alkemyapi.Controllers
         private readonly AppDbContext _context;
         private readonly IRepository _repository;
         private readonly IConfiguration _appsettings;
+        private IMailService _mailService;
         
 
-        public UserController(IConfiguration appsettings, AppDbContext context, IRepository repository)
+        public UserController(IConfiguration appsettings, AppDbContext context, IRepository repository, IMailService mailService)
         {
             _context = context;
             _repository = repository;
             _appsettings = appsettings;
+            _mailService = mailService;
           
         }
 
@@ -53,10 +57,11 @@ namespace alkemyapi.Controllers
                 {
                     userR.VerificationCode = token;
                     var userId = await _repository.CreateAsync(userR);
+                    await _mailService.SendEmailAsync(userR.Email,"Token to access API-Alkemy", userR.VerificationCode);
                    
-                        respuesta.Ok = 1;
-                        respuesta.Data.Add(userId);
-                        respuesta.Message = "Usuario Registrado";
+                    respuesta.Ok = 1;
+                    respuesta.Data.Add(userId);
+                    respuesta.Message = "Usuario Registrado";
                     
                 }
             }
@@ -68,8 +73,8 @@ namespace alkemyapi.Controllers
             return Ok(respuesta);
         }
 
-        [HttpPost("auth/login")]
-        
+       
+        [HttpPost("auth/login")]        
         public async Task<ActionResult<User>> Login(string email, string token)
         {
             Respuesta<object> respuesta = new();
@@ -106,7 +111,10 @@ namespace alkemyapi.Controllers
             }
             return Ok(respuesta);
         }
+
+        
     }
+     
 
     public class UserLoginModel
     {

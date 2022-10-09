@@ -59,4 +59,7 @@ C:\Users\S\source\repos\alkemyapi\alkemyapi\obj\Debug\net5.0\alkemyapi.dll
 C:\Users\S\source\repos\alkemyapi\alkemyapi\obj\Debug\net5.0\ref\alkemyapi.dll
 C:\Users\S\source\repos\alkemyapi\alkemyapi\obj\Debug\net5.0\alkemyapi.pdb
 C:\Users\S\source\repos\alkemyapi\alkemyapi\obj\Debug\net5.0\alkemyapi.genruntimeconfig.cache
+C:\Users\S\source\repos\alkemyapi\alkemyapi\bin\Debug\net5.0\System.Net.Http.Formatting.dll
+C:\Users\S\source\repos\alkemyapi\alkemyapi\bin\Debug\net5.0\System.Web.Http.dll
+C:\Users\S\source\repos\alkemyapi\alkemyapi\bin\Debug\net5.0\Newtonsoft.Json.Bson.dll
 C:\Users\S\source\repos\alkemyapi\alkemyapi\obj\Debug\net5.0\alkemyapi.csproj.AssemblyReference.cache
