@@ -5,18 +5,27 @@ using System.Threading.Tasks;
 
 namespace alkemyapi.Data
 {
+   
     public interface IMailService
     {
         Task SendEmailAsync(string toEmail, string subject, string content);
     }
+   
 
     public class SenGridMailService : IMailService
     {
-       
-        public async Task SendEmailAsync(string toEmail, string subject, string content)
+        private IConfiguration _configuration;
+
+        public  SenGridMailService(IConfiguration configuration)
         {
-           
-            var client = new SendGridClient("");
+            _configuration = configuration;
+        }
+
+
+            public async Task SendEmailAsync(string toEmail, string subject, string content)
+        {
+            var apiKey = _configuration["API_KEY"];
+            var client = new SendGridClient(apiKey);
             var from = new EmailAddress("gerardojao@gmail.com", "@gerardojao");
             var to = new EmailAddress(toEmail);
             var msg = MailHelper.CreateSingleEmail(from, to, subject, content, content);

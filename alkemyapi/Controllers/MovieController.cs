@@ -139,7 +139,7 @@ namespace alkemyapi.Controllers
                     PeliculaSerie movies = new();
                     movies.Imagen = guidImagen;
                     movies.Titulo = movie.Titulo;
-                    movies.FechaCreacion = movie.FechaCreacion;
+                    movies.FechaCreacion = DateTime.Now;
                     movies.CalificacionId = movie.CalificacionId;                  
                     movies.PersonajeId = movie.PersonajeId;
 
@@ -159,7 +159,7 @@ namespace alkemyapi.Controllers
 
         //Actualizar movie
         [HttpPut("UpdateMovie{Id}")]
-        public async Task<ActionResult<PeliculaSerie>> ActualizarPeliculas(int Id, PeliculaSerie movies)
+        public async Task<ActionResult<PeliculaSerie>> ActualizarPeliculas( int Id, PeliculaSerie movies)
         {
             Respuesta<object> respuesta = new();
             try

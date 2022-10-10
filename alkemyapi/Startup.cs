@@ -36,6 +36,7 @@ namespace alkemyapi
                     .AllowAnyMethod()
                     .AllowAnyHeader());
             });
+            services.AddSingleton(Configuration);
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {

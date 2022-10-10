@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json.Serialization;
 
 namespace alkemyapi.Models
 {
@@ -12,8 +12,8 @@ namespace alkemyapi.Models
         [Column(TypeName = "varchar(100)")]
         public string Imagen { get; set; }
 
-        //[NotMapped]
-        //public IFormFile File { get; set; }
+        [NotMapped]
+        public IFormFile File { get; set; }
 
         [Key]
         public int Id { get; set; }
