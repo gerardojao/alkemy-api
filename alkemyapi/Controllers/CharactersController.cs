@@ -81,52 +81,99 @@ namespace alkemyapi.Controllers
             return Ok(respuesta);
         }
 
-        //GET: api/<UsersController>
+        ////GET: api/<UsersController>
         //[HttpGet]
-        //public async Task<ActionResult> GetAllChcaracters()
-        //{  
+        //public async Task<ActionResult> GetByQueries()
+        //{
         //    var character = await _repository.SelectAll<Personaje>();
         //    return Ok(character);
         //}
         // GET: query parameters NAME
         [HttpGet]
-        public async Task<ActionResult> GetPersonajeByName([FromQuery]string name)
+        public async Task<ActionResult> GetCharacterByQueries([FromQuery]string? name, int? age, int? idMovie)
         {
             Respuesta<object> respuesta = new();
             try
             {
-                var _person = await (from personaje in _context.Personajes
-                                     join pelis in _context.PeliculaSeries on personaje.PeliculaSerieId equals pelis.Id
-                                     where personaje.Nombre == name
-                                     select new
-                                     {
-                                         personaje.Imagen,
-                                         personaje.Nombre,
-                                         personaje.Edad,
-                                         personaje.Peso,
-                                         personaje.Historia,
-                                         Titulo = (from pel in _context.PeliculaSeries
-                                                   where pel.PersonajeId == personaje.Id
-                                                   select (pel.Titulo)).ToList()
-
-                                     }).ToListAsync();
-                if (_person == null)
+                if (name==null && age == null && idMovie == null) 
                 {
-                    foreach (var item in _person)
+                    respuesta.Ok = 0;
+                    respuesta.Message = "Debe suministrar algún parametro";
+                } else if(name != null)
+                {
+                    var _person = await _context.Personajes.Where(p => p.Nombre == name).FirstOrDefaultAsync();
+                    respuesta.Data.Add(new
                     {
-                        respuesta.Data.Add(item);
-                    }
-
-
+                        _person.Imagen,
+                        _person.Nombre,
+                        _person.Edad,
+                        _person.Peso,
+                        _person.Historia,
+                        Titulo = (from pel in _context.PeliculaSeries
+                                  where pel.PersonajeId == _person.Id
+                                  select (pel.Titulo)).ToList()
+                    });
                     respuesta.Ok = 1;
-                    respuesta.Message = "Detalle del personaje";
+                    respuesta.Message = "Detalle del personaje por Nombre";
+                }
+                else if (age != null && name == null && idMovie == null)
+                {
+                    var _person = await _context.Personajes.Where(p => p.Edad == age).FirstOrDefaultAsync();
+                    respuesta.Data.Add(new
+                    {
+                        _person.Imagen,
+                        _person.Nombre,
+                        _person.Edad,
+                        _person.Peso,
+                        _person.Historia,
+                        Titulo = (from pel in _context.PeliculaSeries
+                                  where pel.PersonajeId == _person.Id
+                                  select (pel.Titulo)).ToList()
+                    });
+                    respuesta.Ok = 1;
+                    respuesta.Message = "Detalle del personaje por Edad";
+                }
+                else if (idMovie != null && name == null && age == null)
+                {
+                    
+                    var _person = await (from per in _context.Personajes
+                                        join pelis in _context.PeliculaSeries on per.PeliculaSerieId equals pelis.Id
+                                        where per.PeliculaSerieId == idMovie
+                                        select new 
+                                        {
+                                            per.Imagen,
+                                            per.Nombre,
+                                            per.Edad,
+                                            per.Peso,
+                                            per.Historia,
+                                            Titulo = (from pel in _context.PeliculaSeries
+                                                      where pel.PersonajeId == per.Id
+                                                      select (pel.Titulo)).ToList()
+                                        }).ToListAsync();
+                    if(_person != null)
+                    {
+                        respuesta.Data.Add(_person);
+                        respuesta.Ok = 1;
+                        respuesta.Message = "Detalle del personaje por Pelicula o Serie";
+                    }                   
                 }
                 else
                 {
                     respuesta.Ok = 0;
-                    respuesta.Message = "Personaje no encontrado";
-                }
+                    respuesta.Message = "La busqueda puedes hacerla por un solo parametro";
 
+                }
+                //
+                //var _personAge = await _context.Personajes.Where(p => p.Edad == age).FirstOrDefaultAsync();
+                //var _personIdMovie = await _context.Personajes.Where(p => p.PeliculaSerieId == idMovie).FirstOrDefaultAsync();
+                //if (_person != null && _personAge == null && _personIdMovie == null)
+                //{
+
+                //}
+                //else if(_person == null && _personAge != null && _personIdMovie == null)
+                //{
+
+                //}
             }
             catch (Exception e)
             {
@@ -136,93 +183,48 @@ namespace alkemyapi.Controllers
             }
             return Ok(respuesta);
         }        
-
-        //Ssaved images
-        //[HttpPost("create")]
-        //public async Task<ActionResult> CreateCharacter([FromForm] PersonajeFile person)
-        //{
-        //    Respuesta<object> respuesta = new();
-        //    try
-        //    {
-        //        if (person != null)
-        //        {
-        //            string guidImagen = null;
-        //            if (person.File != null)
-        //            {
-        //                string ficherosImagenes = Path.Combine(_env.WebRootPath, "File");
-        //                guidImagen = Guid.NewGuid().ToString() + person.File.FileName;
-        //                string ruta = Path.Combine(ficherosImagenes, guidImagen);
-        //                await person.File.CopyToAsync(new FileStream(ruta, FileMode.Create));
-        //            }
-        //            Personaje personaje = new();
-        //            personaje.Imagen = guidImagen;
-        //            personaje.Nombre = person.Nombre;
-        //            personaje.Peso = person.Peso;
-        //            personaje.Edad = person.Edad;
-        //            personaje.Historia = person.Historia;
-        //            personaje.PeliculaSerieId = person.PeliculaSerieId;
-
-        //            await _repository.CreateAsync(personaje);
-        //            respuesta.Ok = 1;
-        //            respuesta.Message = "Character registered successfully";
-        //        }
-
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        respuesta.Ok = 0;
-        //        respuesta.Message = e.Message + " " + e.InnerException;
-        //        return Ok(respuesta);
-        //    }
-        //    return Ok(respuesta);
-        //}
+       
         // GET api/<QuestionsVrsController>/5
-        [HttpGet("character/{id}")]
+        [HttpGet("{id}")]
         public async Task<ActionResult> GetPersonajeById(int id)
-        {
+        {        
             Respuesta<object> respuesta = new();
             try
             {
-                var _person = await (from personaje in _context.Personajes
-                                     join pelis in _context.PeliculaSeries on personaje.PeliculaSerieId equals pelis.Id
-                                     where personaje.Id == id
-                                     select new
-                                     {
-                                         personaje.Imagen,
-                                         personaje.Nombre,
-                                         personaje.Edad,
-                                         personaje.Peso,
-                                         personaje.Historia,
-                                         Titulo = (from pel in _context.PeliculaSeries
-                                                   where pel.PersonajeId == personaje.Id
-                                                   select (pel.Titulo)).ToList()
-
-                                     }).ToListAsync();
-                if (_person != null)
+                var person = await _context.Personajes.Where(q => q.Id == id).FirstOrDefaultAsync();
+                if (person != null)
                 {
-                    foreach (var item in _person)
+                    respuesta.Data.Add(new
                     {
-                        respuesta.Data.Add(item);
-                    }
-               
-                   
+                        person.Imagen,
+                        person.Nombre,
+                        person.Peso,
+                        person.Edad,
+                        person.Historia,
+                        Titulo = (from pel in _context.PeliculaSeries
+                                  where pel.PersonajeId == person.Id
+                                  select (pel.Titulo)).ToList()
+
+                    });
                     respuesta.Ok = 1;
-                    respuesta.Message = "Detalle del personaje";
+                    respuesta.Message = "Detalles del personaje";
                 }
                 else
                 {
                     respuesta.Ok = 0;
-                    respuesta.Message = "Personaje no encontrado";
+                    respuesta.Message = "Personaja no encontrado";
+                    return BadRequest(respuesta);
                 }
-              
             }
             catch (Exception e)
             {
                 respuesta.Ok = 0;
                 respuesta.Message = e.Message + " " + e.InnerException;
-                return Ok(respuesta);
+                return BadRequest(respuesta);
             }
             return Ok(respuesta);
+
+
         }
 
         //Ssaved images

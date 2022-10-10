@@ -26,7 +26,7 @@ namespace alkemyapi.Data
         {
             var apiKey = _configuration["API_KEY"];
             var client = new SendGridClient(apiKey);
-            var from = new EmailAddress("gerardojao@gmail.com", "@gerardojao");
+            var from = new EmailAddress("ayaconsultorestributarios@gmail.com");
             var to = new EmailAddress(toEmail);
             var msg = MailHelper.CreateSingleEmail(from, to, subject, content, content);
             var response = await client.SendEmailAsync(msg);

@@ -57,11 +57,10 @@ namespace alkemyapi.Controllers
                 {
                     userR.VerificationCode = token;
                     var userId = await _repository.CreateAsync(userR);
-                    await _mailService.SendEmailAsync(userR.Email,"Token to access API-Alkemy", $"<h2>Thanks {userR.Username} por registrarte en nuetra App</h2><br><h4>Acá te enviamos tu token de segurdad para ingresar: </h4>" + $"<p>{userR.VerificationCode }</p>");
-                   
+                    await _mailService.SendEmailAsync(userR.Email, "Token to access API-Alkemy", "Your Security Token: " + userR.VerificationCode);                   
                     respuesta.Ok = 1;
                     respuesta.Data.Add(userId);
-                    respuesta.Message = "Usuario Registrado";
+                    respuesta.Message = "Usuario Registrado  token enviado al correo " + userR.Email;
                     
                 }
             }

@@ -76,29 +76,22 @@ namespace alkemyapi.Controllers
         public async Task<ActionResult> GetMovieSerieById(int id)
         {
             Respuesta<object> respuesta = new();
+           
             try
             {
-                var _movie = await (from pelis in _context.PeliculaSeries
-                                    join movie in _context.PeliculaSeries on pelis.PersonajeId equals movie.Id 
-                                     where pelis.Id == id
-                                     select new
-                                     {
-                                         pelis.Imagen,
-                                         pelis.Titulo,
-                                         pelis.FechaCreacion,
-                                         pelis.CalificacionId,                                        
-                                         Personaje = (from personaje in _context.Personajes
-                                                       where personaje.Id == pelis.PersonajeId
-                                                   select (personaje.Nombre)).ToList()
-
-                                     }).ToListAsync();
-                if (_movie != null)
+                var pelis = await _context.PeliculaSeries.Where(m => m.Id == id).FirstOrDefaultAsync();
+                if (pelis != null)
                 {
-                    foreach (var item in _movie)
+                    respuesta.Data.Add(new
                     {
-                        respuesta.Data.Add(item);
-                    }
-
+                        pelis.Imagen,
+                        pelis.Titulo,
+                        pelis.FechaCreacion,
+                        pelis.CalificacionId,
+                        Personaje = (from personaje in _context.Personajes
+                                     where personaje.Id == pelis.PersonajeId
+                                     select (personaje.Nombre)).ToList()
+                    });
 
                     respuesta.Ok = 1;
                     respuesta.Message = "Detalle del movie";
@@ -167,9 +160,7 @@ namespace alkemyapi.Controllers
                 var _movie = await _repository.SelectById<PeliculaSerie>(Id);
                 if (_movie!= null)
                 {
-                    _movie.Imagen = movies.Imagen;
-                    _movie.Titulo = movies.Titulo;
-                    _movie.FechaCreacion = movies.FechaCreacion;
+                    _movie.Titulo = movies.Titulo;                  
                     _movie.CalificacionId = movies.CalificacionId;
                     _movie.PersonajeId = movies.PersonajeId;
                     await _repository.UpdateAsync(_movie);
