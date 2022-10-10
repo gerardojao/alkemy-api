@@ -15,8 +15,8 @@ namespace alkemyapi.Data
        
         public async Task SendEmailAsync(string toEmail, string subject, string content)
         {
-            var apiKey = "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";
-            var client = new SendGridClient(apiKey);
+           
+            var client = new SendGridClient("");
             var from = new EmailAddress("gerardojao@gmail.com", "@gerardojao");
             var to = new EmailAddress(toEmail);
             var msg = MailHelper.CreateSingleEmail(from, to, subject, content, content);
