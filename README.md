@@ -3,7 +3,7 @@
 :construction: Proyecto en construcción :construction:
 </h3>
 
-##Indicaciones para inicializar el Proyecto
+<h4>Indicaciones para inicializar el Proyecto</h4>
 ### En este proyecto, se utilizo:
  - Visual Studio
  - .NET
