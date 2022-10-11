@@ -199,7 +199,7 @@ namespace alkemyapi.Controllers
             return Ok(respuesta);
         }
 
-        [HttpGet("test")]
+        [HttpGet("/")]
         public async Task<ActionResult> GetMoviesByQueries([FromQuery] string name, int? genre, string order)
         {
             Respuesta<object> respuesta = new();
