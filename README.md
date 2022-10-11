@@ -3,12 +3,13 @@
 :construction: Proyecto en construcción :construction:
 </h3>
 
-## Indicaciones para inicializar el Proyecto
 ### En este proyecto, se utilizó:
  - Visual Studio
  - .NET
  - SQL SERVER
  - SENDGRID
+
+## Indicaciones para inicializar el Proyecto
  
 ## :hammer:Funcionalidades del proyecto
 
