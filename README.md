@@ -8,7 +8,7 @@
 -Visual Studio
 -.NET
 -SQL SERVER
-_SENDGRID
+-SENDGRID
 ## :hammer:Funcionalidades del proyecto
 
 - `Funcionalidad 1`: descripción de la funcionalidad 
