@@ -18,7 +18,7 @@ using System.Threading.Tasks;
 
 namespace alkemyapi.Controllers
 {
-    [Route("api/")]
+    [Route("auth")]
     [ApiController]
     public class UserController : ControllerBase
     {
@@ -38,7 +38,7 @@ namespace alkemyapi.Controllers
         }
 
         // POST api/<UserController>
-        [HttpPost("auth/Register")]
+        [HttpPost("Register")]
         [AllowAnonymous]
         public async Task<IActionResult> Register(User userR)
         {
@@ -73,7 +73,7 @@ namespace alkemyapi.Controllers
         }
 
        
-        [HttpPost("auth/login")]        
+        [HttpPost("login")]        
         public async Task<ActionResult<User>> Login(string email, string username)
         {
             Respuesta<object> respuesta = new();
@@ -114,13 +114,4 @@ namespace alkemyapi.Controllers
         
     }
      
-
-    //public class UserLoginModel
-    //{
-    //    [EmailAddress]
-    //    public string Email { get; set; }
-
-    //    public string Code { get; set; }
-        
-    //}
 }

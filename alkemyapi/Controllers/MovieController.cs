@@ -113,7 +113,7 @@ namespace alkemyapi.Controllers
         }
 
         //Ssaved images
-        [HttpPost("create")]
+        [HttpPost]
         public async Task<ActionResult> CreateMovie([FromForm] MovieFile movie)
         {
             Respuesta<object> respuesta = new();
@@ -151,7 +151,7 @@ namespace alkemyapi.Controllers
         }
 
         //Actualizar movie
-        [HttpPut("UpdateMovie{Id}")]
+        [HttpPut("{Id}")]
         public async Task<ActionResult<PeliculaSerie>> ActualizarPeliculas( int Id, PeliculaSerie movies)
         {
             Respuesta<object> respuesta = new();
@@ -177,7 +177,7 @@ namespace alkemyapi.Controllers
         }
 
         //Eliminar movie
-        [HttpDelete("DeleteMovie{Id}")]
+        [HttpDelete("{Id}")]
         public async Task<ActionResult<PeliculaSerie>> Deletemovie(int Id)
         {
             Respuesta<object> respuesta = new();
@@ -199,7 +199,7 @@ namespace alkemyapi.Controllers
             return Ok(respuesta);
         }
 
-        [HttpGet("/")]
+        [HttpGet(" ")]
         public async Task<ActionResult> GetMoviesByQueries([FromQuery] string name, int? genre, string order)
         {
             Respuesta<object> respuesta = new();

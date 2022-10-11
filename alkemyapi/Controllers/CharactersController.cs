@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 namespace alkemyapi.Controllers
 {
    //[Authorize]
-    [Route("api/[controller]")]
+    [Route("character")]
     [ApiController]
     public class CharactersController : ControllerBase
     {
@@ -35,7 +35,7 @@ namespace alkemyapi.Controllers
         }
 
         //GET: api/<CharactersController>
-       [HttpGet("AllCharacters")]
+       [HttpGet]
        public async Task<ActionResult<IEnumerable<Personaje>>> GetAllPersonajes(string token)
         {
             Respuesta<object> respuesta = new();
@@ -89,7 +89,7 @@ namespace alkemyapi.Controllers
         //    return Ok(character);
         //}
         // GET: query parameters NAME
-        [HttpGet]
+        [HttpGet(" ")]
         public async Task<ActionResult> GetCharacterByQueries([FromQuery]string? name, int? age, int? idMovie)
         {
             Respuesta<object> respuesta = new();
@@ -218,7 +218,7 @@ namespace alkemyapi.Controllers
         }
 
         //Ssaved images
-        [HttpPost("create")]
+        [HttpPost]
         public async Task<ActionResult> CreateCharacter([FromForm] PersonajeFile person)        
         {          
             Respuesta<object> respuesta = new();
@@ -258,7 +258,7 @@ namespace alkemyapi.Controllers
          }
         
         //Actualizar Personaje
-        [HttpPut("UpdateCharacter{Id}")]
+        [HttpPut("{Id}")]
         public async Task<ActionResult<Personaje>> ActualizarPersonaje(int Id, Personaje personaje)
         {
             Respuesta<object> respuesta = new();
@@ -287,7 +287,7 @@ namespace alkemyapi.Controllers
         }
 
         //Eliminar Personaje
-        [HttpDelete("DeleteCharacter{Id}")]       
+        [HttpDelete("{Id}")]       
         public async Task<ActionResult<Personaje>> DeletePersonaje(int Id)
         {
             Respuesta<object> respuesta = new();
