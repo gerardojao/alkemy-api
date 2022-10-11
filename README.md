@@ -20,6 +20,12 @@
 3. `Listado de Personajes`: (/characters)
  - Listará los personajes con Imagen y Nombre. 
 4. `Creación, Edición, Eliminación de Personajes (CRUD)`: POdrá crear nuevos personajes, editar y/o eliminar personajes existentes.
-5.  `Búsqueda de Personajes`: En el detalle deberán listarse todos los atributos del personaje, como así también sus películas o series relacionadas.
+5.  `Detalle de Personaje`: En el detalle deberán listarse todos los atributos del personaje, como así también sus películas o series relacionadas.
+6.  `Búsqueda de Personajes`: 
+ -  GET /characters?name=nombre
+ -  GET /characters?age=edad
+ -  GET /characters?movies=idMovie)
+ A traaves de query parameter podra hacer una busqueda con los endpoints anteriores
+ 7. `Listado de Peliculas o Series` : Deberá mostrar solamente los campos imagen, título y fecha de creación.
+El endpoint a utilizar: GET /movies
 
-6.  `Funcionalidad 3`: descripción de la funcionalidad 3
