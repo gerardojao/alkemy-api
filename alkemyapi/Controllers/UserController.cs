@@ -57,10 +57,10 @@ namespace alkemyapi.Controllers
                 {
                     userR.VerificationCode = token;
                     var userId = await _repository.CreateAsync(userR);
-                    await _mailService.SendEmailAsync(userR.Email, "Token to access API-Alkemy", "Your Security Token: " + userR.VerificationCode);                   
+                    //await _mailService.SendEmailAsync(userR.Email, "Token to access API-Alkemy", "Your Security Token: " + userR.VerificationCode);                   
                     respuesta.Ok = 1;
                     respuesta.Data.Add(userId);
-                    respuesta.Message = "Usuario Registrado  token enviado al correo " + userR.Email;
+                    respuesta.Message = "Usuario Registrado";
                     
                 }
             }
@@ -74,7 +74,7 @@ namespace alkemyapi.Controllers
 
        
         [HttpPost("auth/login")]        
-        public async Task<ActionResult<User>> Login(string email, string token)
+        public async Task<ActionResult<User>> Login(string email, string username)
         {
             Respuesta<object> respuesta = new();
             try
@@ -83,17 +83,17 @@ namespace alkemyapi.Controllers
                 if (user != null)
                 {
                         SqlConnection con = new(_appsettings.GetConnectionString("DevConnection").ToString());
-                        SqlDataAdapter da = new("SELECT * FROM Users WHERE Email ='"+email +"' AND VerificationCode = '"+token+"' ", con);
+                        SqlDataAdapter da = new("SELECT * FROM Users WHERE Email ='"+ email +"' AND Username = '"+ username +"' ", con);
                         DataTable dt = new();
                         da.Fill(dt);
                         if (dt.Rows.Count > 0)
                         {
-                            
+                            await _mailService.SendEmailAsync(user.Email, "Token to access API-Alkemy", "Your Security Token: " + user.VerificationCode);
                             respuesta.Ok = 1;
                             respuesta.Message = "Usuario logueado";
                             return Ok(respuesta);
                         }
-                    return Ok("Error en email o token");
+                    return Ok("Error en email o username");
                 }
                 else
                 {
@@ -115,12 +115,12 @@ namespace alkemyapi.Controllers
     }
      
 
-    public class UserLoginModel
-    {
-        [EmailAddress]
-        public string Email { get; set; }
+    //public class UserLoginModel
+    //{
+    //    [EmailAddress]
+    //    public string Email { get; set; }
 
-        public string Code { get; set; }
+    //    public string Code { get; set; }
         
-    }
+    //}
 }

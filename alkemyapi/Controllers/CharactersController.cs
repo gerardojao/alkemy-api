@@ -163,17 +163,7 @@ namespace alkemyapi.Controllers
                     respuesta.Message = "La busqueda puedes hacerla por un solo parametro";
 
                 }
-                //
-                //var _personAge = await _context.Personajes.Where(p => p.Edad == age).FirstOrDefaultAsync();
-                //var _personIdMovie = await _context.Personajes.Where(p => p.PeliculaSerieId == idMovie).FirstOrDefaultAsync();
-                //if (_person != null && _personAge == null && _personIdMovie == null)
-                //{
-
-                //}
-                //else if(_person == null && _personAge != null && _personIdMovie == null)
-                //{
-
-                //}
+                
             }
             catch (Exception e)
             {

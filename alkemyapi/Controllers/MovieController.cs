@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace alkemyapi.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("movies")]
     [ApiController]
     public class MovieController : ControllerBase
     {
@@ -195,6 +195,87 @@ namespace alkemyapi.Controllers
             {
                 respuesta.Ok = 0;
                 respuesta.Message = e.Message + " " + e.InnerException;
+            }
+            return Ok(respuesta);
+        }
+
+        [HttpGet("test")]
+        public async Task<ActionResult> GetMoviesByQueries([FromQuery] string name, int? genre, string order)
+        {
+            Respuesta<object> respuesta = new();
+            try
+            {
+                if (order=="ASC")
+                {
+
+                    var pelis = await (from movies in _context.PeliculaSeries
+                                       join per in _context.Personajes on movies.Id equals per.PeliculaSerieId
+                                       join gen in _context.Generos on movies.Id equals gen.PeliculaSerieId
+                                       where movies.Titulo == name
+                                       select new
+                                       {
+                                           movies.Imagen,
+                                           movies.Titulo,
+                                           movies.FechaCreacion,
+                                           movies.CalificacionId,
+                                           gen.Nombre,
+                                           Personaje = (from personaje in _context.Personajes
+                                                        where personaje.Id == movies.PersonajeId
+                                                        select (personaje.Nombre)).ToList()
+                                       }).ToListAsync();
+                    if (pelis != null)
+                    {
+                        respuesta.Data.Add(pelis);
+                        respuesta.Ok = 1;
+                        respuesta.Message = "Detalle del movie";
+                    }
+                    else
+                    {
+                        respuesta.Ok = 0;
+                        respuesta.Message = "Data not found";
+                        return Ok(respuesta);
+                    }
+
+                }
+                else
+                {
+                    var pelis = await (from movies in _context.PeliculaSeries
+                                       join per in _context.Personajes on movies.Id equals per.PeliculaSerieId
+                                       join gen in _context.Generos on movies.Id equals gen.PeliculaSerieId
+                                       where movies.Titulo == name
+                                       select new
+                                       {
+                                           movies.Imagen,
+                                           movies.Titulo,
+                                           movies.FechaCreacion,
+                                           movies.CalificacionId,
+                                           gen.Nombre,
+                                           Personaje = (from personaje in _context.Personajes
+                                                        where personaje.Id == movies.PersonajeId
+                                                        select (personaje.Nombre)).ToList()
+                                       })
+                                       .OrderByDescending(x => x.FechaCreacion)
+                                       .ToListAsync();
+                    if (pelis != null)
+                    {
+                        respuesta.Data.Add(pelis);
+                        respuesta.Ok = 1;
+                        respuesta.Message = "Detalle del movie";
+                    }
+                    else
+                    {
+                        respuesta.Ok = 0;
+                        respuesta.Message = "Data not found";
+                        return Ok(respuesta);
+                    }
+                }
+               
+            }
+            catch (Exception e)
+            {
+                respuesta.Ok = 0;
+                respuesta.Message = e.Message + " " + e.InnerException;
+                return Ok(respuesta);
             }
             return Ok(respuesta);
         }
