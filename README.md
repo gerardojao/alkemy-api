@@ -9,11 +9,11 @@
  - SQL SERVER
  - SENDGRID
 
-## :signal:Indicaciones para inicializar el Proyecto
+## :mega:Indicaciones para inicializar el Proyecto
  
 ## :hammer:Funcionalidades del proyecto
 
-1. `Autenticación de Usuario`: Descripción de la funcionalidad 
+1. `:closed_lock_with_key:Autenticación de Usuario`: Descripción de la funcionalidad 
  - endpoint login: /auth/register
    Deberá registrarse con un **email válido** y un **username**, con esta data podrá hacer el posterior login.
   - endpoint login: /auth/login
