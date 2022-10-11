@@ -9,7 +9,7 @@
  - SQL SERVER
  - SENDGRID
 
-## Indicaciones para inicializar el Proyecto
+## :signal:Indicaciones para inicializar el Proyecto
  
 ## :hammer:Funcionalidades del proyecto
 
