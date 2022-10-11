@@ -23,7 +23,7 @@
  - POST /character/id
  - PUT /character/id 
  - DELETE /character/id.
-5.  `Detalle de Personaje`: En el detalle deberán listarse todos los atributos del personaje, como así también sus películas o series relacionadas.
+5.  `Detalle de Personaje`: En el detalle deberán listarse todos los atributos del personaje, como así también sus películas o series relacionadas. El endpoint a utilizar: GET /character/id.
 6.  `Búsqueda de Personajes`: A través de query parameter podra hacer una busqueda con los endpoints anteriores
  -  GET /characters?name=nombre
  -  GET /characters?age=edad
@@ -31,4 +31,12 @@
  7. `Listado de Peliculas o Series` : Deberá mostrar solamente los campos imagen, título y fecha de creación.
 El endpoint a utilizar: GET /movies.
 8. `Detalle de Película / Serie con sus personajes`: Devolverá todos los campos de la película o serie junto a los personajes asociados a la misma. El endpoint a utilizar: GET /movies/id.
+9. `Creación, Edición, Eliminación de Peliculas o Series (CRUD)`: Podrá crear nuevos personajes, editar y/o eliminar personajes existentes. 
+ - POST /movies/id
+ - PUT /movies/id 
+ - DELETE /movies/id.
+10. `Búsqueda de Personajes`: A través de query parameter podra hacer una busqueda con los endpoints anteriores
+ -  GET /movies?name=nombre
+ -  GET /movies?genre=idGenero
+ -  GET /movies?order=ASc | DESC
 
