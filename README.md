@@ -12,7 +12,11 @@
  
 ## :hammer:Funcionalidades del proyecto
 
-1. `Autenticación de Usuario`: descripción de la funcionalidad 
-1. `Funcionalidad 2`: descripción de la funcionalidad 
-2.  `Funcionalidad 2a`: descripción de la funcionalidade 2a relacionada con la funcionalidad 
-3.  `Funcionalidad 3`: descripción de la funcionalidad 3
+1. `Autenticación de Usuario`: Descripción de la funcionalidad 
+ - endpoint login: /auth/register
+   Deberá registrarse con un **email válido** y un **username**, con esta data podrá hacer eel posterior login.
+  - endpoint login: /auth/login
+   OCn el email y username registrado podrá hacer login, con lo que a su correo registrado le llegará un **token de seguridad** para el funcionameinto de la API
+3. `Funcionalidad 2`: descripción de la funcionalidad 
+4.  `Funcionalidad 2a`: descripción de la funcionalidade 2a relacionada con la funcionalidad 
+5.  `Funcionalidad 3`: descripción de la funcionalidad 3
