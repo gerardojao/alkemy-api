@@ -14,7 +14,7 @@
 2. Crea un usuario en SENGRID para poder obtener la ApiKey que utilizaras ene el proyecto para el envio de correos.
 3. Clona el repositorio desde esta url: https://github.com/gerardojao/alkemy-api.git.
 4. Checa que las dependencias esten instaladas.
-5. Crea un elemento en la solución llamado wwwroot y dentro de este archivo una carpeta 📁 File, respetando mayúsculas y minúsculas.
+5. Crea un elemento en la solución llamado wwwroot y dentro de este archivo una carpeta 📁 **File**, respetando mayúsculas y minúsculas.
 6. Esta es la cadena de conexión para con la Base de Datos, **"DevConnection": "Server=DESKTOP-O0NC63R\\SQLEXPRESS; database=alkemyProject; Trusted_Connection=true; MultipleActiveResultSets=true"**. Debes configurar tu archivo **appsettings.json**.
 7. Para resguardar datos sensibles, utilice administrador de secretos, por esto, es importante que te posiciones sobe el nombre de la Solucion, click boton derecho del mouse, administrador de secretos.
 8. En secretos, como key utiliza "API_KEY" y como valor el codigo de seguridad que te facilita SENGRID.
