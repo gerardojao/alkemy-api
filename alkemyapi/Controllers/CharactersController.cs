@@ -209,7 +209,12 @@ namespace alkemyapi.Controllers
                         respuesta.Message = "Personaja no encontrado";
                         return BadRequest(respuesta);
                     }
-                }               
+                }
+                else
+                {
+                    respuesta.Ok = 0;
+                    respuesta.Message = "Requiere Token de Seguridad para continuar";
+                }
             }
             catch (Exception e)
             {
@@ -250,7 +255,12 @@ namespace alkemyapi.Controllers
                         respuesta.Ok = 0;
                         respuesta.Message = "Character not created";
                     }
-                }               
+                }
+                else
+                {
+                    respuesta.Ok = 0;
+                    respuesta.Message = "Requiere Token de Seguridad para continuar";
+                }
             }
             catch (Exception e)
             {
@@ -263,7 +273,7 @@ namespace alkemyapi.Controllers
 
         //Actualizar Personaje
         [HttpPut("{Id}")]
-        public async Task<ActionResult<Personaje>> ActualizarPersonaje( int Id, [FromForm] Personaje person)
+        public async Task<ActionResult<Personaje>> ActualizarPersonaje(string token,  int Id, [FromForm] Personaje person)
         {
             Respuesta<object> respuesta = new();
             try
@@ -271,37 +281,41 @@ namespace alkemyapi.Controllers
                 var user = await _context.Users.Where(u => u.VerificationCode == token).FirstOrDefaultAsync();
                 if (user != null)
                 {
-                    
-                }
-                var p = await _context.Personajes.Where(q => q.Id == Id).FirstOrDefaultAsync();
-                if (p != null)
-                {
-                    if (person != null)
+                    var p = await _context.Personajes.Where(q => q.Id == Id).FirstOrDefaultAsync();
+                    if (p != null)
                     {
-                        string ficherosImagenes = Path.Combine(_env.WebRootPath, "File");
-                        string guidImagen = Guid.NewGuid().ToString() + person.File.FileName;
-                        p.Imagen = guidImagen;
-                        string ruta = Path.Combine(ficherosImagenes, guidImagen);
-                        using (var fileStream = new FileStream(ruta, FileMode.Create))
+                        if (person != null)
                         {
-                            await person.File.CopyToAsync(fileStream);
+                            string ficherosImagenes = Path.Combine(_env.WebRootPath, "File");
+                            string guidImagen = Guid.NewGuid().ToString() + person.File.FileName;
+                            p.Imagen = guidImagen;
+                            string ruta = Path.Combine(ficherosImagenes, guidImagen);
+                            using (var fileStream = new FileStream(ruta, FileMode.Create))
+                            {
+                                await person.File.CopyToAsync(fileStream);
+                            }
+                            if (person.Nombre != p.Nombre) { p.Nombre = person.Nombre; }
+                            if (person.Edad != p.Edad) { p.Edad = person.Edad; }
+                            if (person.Peso != p.Peso) { p.Peso = person.Peso; }
+                            if (person.Historia != p.Historia) { p.Historia = person.Historia; }
+                            if (person.PeliculaSerieId != p.PeliculaSerieId) { p.PeliculaSerieId = person.PeliculaSerieId; }
+
+                            await _repository.UpdateAsync(p);
+                            respuesta.Ok = 1;
+                            respuesta.Message = "Character registered successfully";
                         }
-                        if (person.Nombre != p.Nombre) { p.Nombre = person.Nombre; }
-                        if (person.Edad != p.Edad) { p.Edad = person.Edad; }
-                        if (person.Peso != p.Peso) { p.Peso = person.Peso; }
-                        if (person.Historia != p.Historia) { p.Historia = person.Historia; }
-                        if (person.PeliculaSerieId != p.PeliculaSerieId) { p.PeliculaSerieId = person.PeliculaSerieId; }
-                        
-                        await _repository.UpdateAsync(p);
-                        respuesta.Ok = 1;
-                        respuesta.Message = "Character registered successfully";
+
+                        else
+                        {
+                            respuesta.Ok = 0;
+                            respuesta.Message = "No se pudo actualizar el personaje";
+                        }
                     }
-                  
-                    else
-                    {
-                        respuesta.Ok = 0;
-                        respuesta.Message = "No se pudo actualizar el personaje";
-                    }
+                }
+                else
+                {
+                    respuesta.Ok = 0;
+                    respuesta.Message = "Requiere Token de Seguridad para continuar";
                 }
             }
             catch (Exception e)
@@ -315,22 +329,36 @@ namespace alkemyapi.Controllers
 
         //Eliminar Personaje
         [HttpDelete("{Id}")]       
-        public async Task<ActionResult<Personaje>> DeletePersonaje(int Id)
+        public async Task<ActionResult<Personaje>> DeletePersonaje(string token, int Id)
         {
             Respuesta<object> respuesta = new();
           
             try
             {
-                var person = await _repository.SelectById<Personaje>(Id);
-                if (person != null)
+                var user = await _context.Users.Where(u => u.VerificationCode == token).FirstOrDefaultAsync();
+                if (user != null)
                 {
-                    var ficherosImagenes = Path.Combine(_env.WebRootPath, "File", person.Imagen);
-                    if (System.IO.File.Exists(ficherosImagenes))
-                        System.IO.File.Delete(ficherosImagenes);
-                       
-                    await _repository.DeleteAsync(person);
-                    respuesta.Ok = 1;
-                    respuesta.Message = "Personaje eliminado satisfactoriamente";
+                    var person = await _repository.SelectById<Personaje>(Id);
+                    if (person != null)
+                    {
+                        var ficherosImagenes = Path.Combine(_env.WebRootPath, "File", person.Imagen);
+                        if (System.IO.File.Exists(ficherosImagenes))
+                            System.IO.File.Delete(ficherosImagenes);
+
+                        await _repository.DeleteAsync(person);
+                        respuesta.Ok = 1;
+                        respuesta.Message = "Personaje eliminado satisfactoriamente";
+                    }
+                    else
+                    {
+                        respuesta.Ok = 0;
+                        respuesta.Message = "Personaje no encontrado";
+                    }
+                }
+                else
+                {
+                    respuesta.Ok = 0;
+                    respuesta.Message = "Requiere Token de Seguridad para continuar";
                 }
             }
             catch (Exception e)
