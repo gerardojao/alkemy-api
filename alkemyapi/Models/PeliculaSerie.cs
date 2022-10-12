@@ -1,19 +1,25 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
+
 
 namespace alkemyapi.Models
 {
     public class PeliculaSerie
     {
+        public PeliculaSerie()
+        {
+            Personajes = new HashSet<Personaje>();
+        }
+
         [Column(TypeName = "varchar(100)")]
         public string Imagen { get; set; }
 
-        //[NotMapped]
-        //public IFormFile File { get; set; }
+        [NotMapped]
+        public IFormFile File { get; set; }
 
         [Key]
         public int Id { get; set; }
@@ -29,9 +35,10 @@ namespace alkemyapi.Models
         public int PersonajeId { get; set; }
 
         [JsonIgnore]
-        public List<Personaje> Personajes { get; set; }
-        [JsonIgnore]
-        public virtual Calificacion Calificaciones { get; set; }
+        public ICollection<Personaje> Personajes { get; set; }
+
+        //[JsonIgnore]
+        //public virtual Calificacion Calificaciones { get; set; }
       
     }
 }

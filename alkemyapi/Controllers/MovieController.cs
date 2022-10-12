@@ -114,31 +114,29 @@ namespace alkemyapi.Controllers
 
         //Ssaved images
         [HttpPost]
-        public async Task<ActionResult> CreateMovie([FromForm] MovieFile movie)
+        public async Task<ActionResult> CreateMovie([FromForm] PeliculaSerie movie)
         {
             Respuesta<object> respuesta = new();
             try
-            {
+            {                
                 if (movie != null)
                 {
-                    string guidImagen = null;
-                    if (movie.File != null)
+                    string ficherosImagenes = Path.Combine(_env.WebRootPath, "File");
+                    string guidImagen = Guid.NewGuid().ToString() + movie.File.FileName;
+                    movie.Imagen = guidImagen;
+                    string ruta = Path.Combine(ficherosImagenes, guidImagen);
+                    using (var fileStream = new FileStream(ruta, FileMode.Create))
                     {
-                        string ficherosImagenes = Path.Combine(_env.WebRootPath, "File");
-                        guidImagen = Guid.NewGuid().ToString() + movie.File.FileName;
-                        string ruta = Path.Combine(ficherosImagenes, guidImagen);
-                        await movie.File.CopyToAsync(new FileStream(ruta, FileMode.Create));
+                        await movie.File.CopyToAsync(fileStream);
                     }
-                    PeliculaSerie movies = new();
-                    movies.Imagen = guidImagen;
-                    movies.Titulo = movie.Titulo;
-                    movies.FechaCreacion = DateTime.Now;
-                    movies.CalificacionId = movie.CalificacionId;                  
-                    movies.PersonajeId = movie.PersonajeId;
-
-                    await _repository.CreateAsync(movies);
+                    await _repository.CreateAsync(movie);
                     respuesta.Ok = 1;
-                    respuesta.Message = "Character registered successfully";
+                    respuesta.Message = "Movie/Serie registered successfully";
+                }
+                else
+                {
+                    respuesta.Ok = 0;
+                    respuesta.Message = "Movie/Serie not created";
                 }
             }
             catch (Exception e)
@@ -151,21 +149,41 @@ namespace alkemyapi.Controllers
         }
 
         //Actualizar movie
+        //Actualizar Personaje
         [HttpPut("{Id}")]
-        public async Task<ActionResult<PeliculaSerie>> ActualizarPeliculas( int Id, PeliculaSerie movies)
+        public async Task<ActionResult<Personaje>> ActualizarPersonaje(int Id, [FromForm] PeliculaSerie movie)
         {
             Respuesta<object> respuesta = new();
             try
             {
-                var _movie = await _repository.SelectById<PeliculaSerie>(Id);
-                if (_movie!= null)
+                var p = await _context.PeliculaSeries.Where(q => q.Id == Id).FirstOrDefaultAsync();
+                if (p != null)
                 {
-                    _movie.Titulo = movies.Titulo;                  
-                    _movie.CalificacionId = movies.CalificacionId;
-                    _movie.PersonajeId = movies.PersonajeId;
-                    await _repository.UpdateAsync(_movie);
-                    respuesta.Ok = 1;
-                    respuesta.Message = "Pelicula o Serie actualizada satisfactoriamente";
+                    if (movie != null)
+                    {
+                        string ficherosImagenes = Path.Combine(_env.WebRootPath, "File");
+                        string guidImagen = Guid.NewGuid().ToString() + movie.File.FileName;
+                        p.Imagen = guidImagen;
+                        string ruta = Path.Combine(ficherosImagenes, guidImagen);
+                        using (var fileStream = new FileStream(ruta, FileMode.Create))
+                        {
+                            await movie.File.CopyToAsync(fileStream);
+                        }
+                        if (movie.Titulo != p.Titulo) { p.Titulo = movie.Titulo; }
+                        if (movie.CalificacionId != p.CalificacionId) { p.CalificacionId = movie.CalificacionId; }
+                        if (movie.PersonajeId != p.PersonajeId) { p.PersonajeId = movie.PersonajeId; }
+                        if (movie.FechaCreacion != p.FechaCreacion) { p.FechaCreacion = movie.FechaCreacion; }
+                       
+                        await _repository.UpdateAsync(p);
+                        respuesta.Ok = 1;
+                        respuesta.Message = "Movie/Serie updated successfully";
+                    }
+
+                    else
+                    {
+                        respuesta.Ok = 0;
+                        respuesta.Message = "No se pudo actualizar la pelicula o serie";
+                    }
                 }
             }
             catch (Exception e)
@@ -173,6 +191,7 @@ namespace alkemyapi.Controllers
                 respuesta.Ok = 0;
                 respuesta.Message = e.Message + " " + e.InnerException;
             }
+
             return Ok(respuesta);
         }
 
@@ -186,9 +205,13 @@ namespace alkemyapi.Controllers
                 var movie = await _repository.SelectById<PeliculaSerie>(Id);
                 if (movie != null)
                 {
+                    var ficherosImagenes = Path.Combine(_env.WebRootPath, "File", movie.Imagen);
+                    if (System.IO.File.Exists(ficherosImagenes))
+                        System.IO.File.Delete(ficherosImagenes);
+
                     await _repository.DeleteAsync(movie);
                     respuesta.Ok = 1;
-                    respuesta.Message = "movie eliminado satisfactoriamente";
+                    respuesta.Message = "Pelicula o Serie eliminada satisfactoriamente";
                 }
             }
             catch (Exception e)

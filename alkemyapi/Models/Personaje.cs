@@ -17,8 +17,8 @@ namespace alkemyapi.Models
         }
         [Column(TypeName = "varchar(100)")]
         public string Imagen { get; set; }
-        //[NotMapped]
-        //public IFormFile File { get; set; }
+        [NotMapped]
+        public IFormFile File { get; set; }
 
         [Key]
         public int Id { get; set; }

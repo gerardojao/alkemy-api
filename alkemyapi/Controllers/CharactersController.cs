@@ -90,7 +90,7 @@ namespace alkemyapi.Controllers
         //}
         // GET: query parameters NAME
         [HttpGet(" ")]
-        public async Task<ActionResult> GetCharacterByQueries([FromQuery]string? name, int? age, int? idMovie)
+        public async Task<ActionResult> GetCharacterByQueries([FromQuery] string? name, int? age, int? idMovie)
         {
             Respuesta<object> respuesta = new();
             try
@@ -217,36 +217,33 @@ namespace alkemyapi.Controllers
 
         }
 
-        //Ssaved images
+        //Saved images
         [HttpPost]
-        public async Task<ActionResult> CreateCharacter([FromForm] PersonajeFile person)        
+        public async Task<ActionResult> CreateCharacter([FromForm] Personaje person)        
         {          
             Respuesta<object> respuesta = new();
             try
             {
                 if (person!=null)
                 {
-                    string guidImagen = null;
-                    if (person.File != null)
+                    string ficherosImagenes = Path.Combine(_env.WebRootPath, "File");
+                    string guidImagen = Guid.NewGuid().ToString() + person.File.FileName;
+                    person.Imagen = guidImagen;
+                    string ruta = Path.Combine(ficherosImagenes, guidImagen);
+                    using (var fileStream = new FileStream(ruta, FileMode.Create))
                     {
-                        string ficherosImagenes = Path.Combine(_env.WebRootPath, "File");                       
-                        guidImagen = Guid.NewGuid().ToString() + person.File.FileName;
-                        string ruta = Path.Combine(ficherosImagenes, guidImagen);
-                        await person.File.CopyToAsync(new FileStream(ruta, FileMode.Create));
+                        await person.File.CopyToAsync(fileStream);
+                        
                     }
-                    Personaje personaje = new();
-                    personaje.Imagen = guidImagen;
-                    personaje.Nombre = person.Nombre;
-                    personaje.Peso = person.Peso;
-                    personaje.Edad = person.Edad;
-                    personaje.Historia = person.Historia;
-                    personaje.PeliculaSerieId = person.PeliculaSerieId;
-                    
-                    await _repository.CreateAsync(personaje);
+                    await _repository.CreateAsync(person);
                     respuesta.Ok = 1;
-                    respuesta.Message = "Character registered successfully";                   
+                    respuesta.Message = "Character registered successfully";
                 }
-
+                else
+                {
+                    respuesta.Ok = 0;
+                    respuesta.Message = "Character not created";
+                }
             }
             catch (Exception e)
             {
@@ -256,26 +253,43 @@ namespace alkemyapi.Controllers
             }
             return Ok(respuesta);
          }
-        
+
         //Actualizar Personaje
         [HttpPut("{Id}")]
-        public async Task<ActionResult<Personaje>> ActualizarPersonaje(int Id, Personaje personaje)
+        public async Task<ActionResult<Personaje>> ActualizarPersonaje( int Id, [FromForm] Personaje person)
         {
             Respuesta<object> respuesta = new();
             try
             {
-                var _person = await _repository.SelectById<Personaje>(Id);
-                if (_person != null)
+                var p = await _context.Personajes.Where(q => q.Id == Id).FirstOrDefaultAsync();
+                if (p != null)
                 {
-                    _person.Imagen = personaje.Imagen;
-                    _person.Nombre = personaje.Nombre;
-                    _person.Peso = personaje.Peso;
-                    _person.Edad = personaje.Edad;
-                    _person.Historia = personaje.Historia;
-                    _person.PeliculaSerieId = personaje.PeliculaSerieId;
-                    await _repository.UpdateAsync(_person);
-                    respuesta.Ok = 1;
-                    respuesta.Message = "Personaje actualizado satisfactoriamente";
+                    if (person != null)
+                    {
+                        string ficherosImagenes = Path.Combine(_env.WebRootPath, "File");
+                        string guidImagen = Guid.NewGuid().ToString() + person.File.FileName;
+                        p.Imagen = guidImagen;
+                        string ruta = Path.Combine(ficherosImagenes, guidImagen);
+                        using (var fileStream = new FileStream(ruta, FileMode.Create))
+                        {
+                            await person.File.CopyToAsync(fileStream);
+                        }
+                        if (person.Nombre != p.Nombre) { p.Nombre = person.Nombre; }
+                        if (person.Edad != p.Edad) { p.Edad = person.Edad; }
+                        if (person.Peso != p.Peso) { p.Peso = person.Peso; }
+                        if (person.Historia != p.Historia) { p.Historia = person.Historia; }
+                        if (person.PeliculaSerieId != p.PeliculaSerieId) { p.PeliculaSerieId = person.PeliculaSerieId; }
+                        
+                        await _repository.UpdateAsync(p);
+                        respuesta.Ok = 1;
+                        respuesta.Message = "Character registered successfully";
+                    }
+                  
+                    else
+                    {
+                        respuesta.Ok = 0;
+                        respuesta.Message = "No se pudo actualizar el personaje";
+                    }
                 }
             }
             catch (Exception e)
@@ -283,6 +297,7 @@ namespace alkemyapi.Controllers
                 respuesta.Ok = 0;
                 respuesta.Message = e.Message + " " + e.InnerException;
             }
+
             return Ok(respuesta);
         }
 
@@ -291,11 +306,16 @@ namespace alkemyapi.Controllers
         public async Task<ActionResult<Personaje>> DeletePersonaje(int Id)
         {
             Respuesta<object> respuesta = new();
+          
             try
             {
                 var person = await _repository.SelectById<Personaje>(Id);
                 if (person != null)
-                {                   
+                {
+                    var ficherosImagenes = Path.Combine(_env.WebRootPath, "File", person.Imagen);
+                    if (System.IO.File.Exists(ficherosImagenes))
+                        System.IO.File.Delete(ficherosImagenes);
+                       
                     await _repository.DeleteAsync(person);
                     respuesta.Ok = 1;
                     respuesta.Message = "Personaje eliminado satisfactoriamente";
